@@ -29,4 +29,23 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./output
+      - name: Get token
+        id: get_token
+        uses: machine-learning-apps/actions-app-token@master
+        with:
+          APP_PEM: ${{ secrets.APP_PEM }}
+          APP_ID: ${{ secrets.APP_ID }}
 
+      - name: Get App Installation Token
+        run: |
+          echo "This token is masked: ${TOKEN}"
+        env:
+          TOKEN: ${{ steps.get_token.outputs.app_token }}
+      - name: Create issue
+        env:
+          TOKEN: ${{ steps.get_token.outputs.app_token }}
+        run: |
+            curl -X POST -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token ${TOKEN}" \
+            https://api.github.com/repos/vadeg/restful-api-guidelines/issues \
+            -d '{"title":"test issue"}'
