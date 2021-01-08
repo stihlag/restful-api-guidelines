@@ -1,6 +1,6 @@
 [[introduction]]
 
-= THIS IS ONLY FOR GITHUB ACTIONS TEST (updated)
+= THIS IS ONLY FOR GITHUB ACTIONS TEST 1
 
 = Introduction
 
