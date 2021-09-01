@@ -104,6 +104,7 @@ You *must* use these formats, whenever applicable:
 | `string` | <<144, `uuid`>> | {RFC-4122}[RFC 4122] | `"e2ab873e-b295-11e9-9c02-..."`
 | `string` | `json-pointer` | {RFC-6901}[RFC 6901] | `"/items/0/id"`
 | `string` | `regex` | regular expressions as defined in {ECMA-262}[ECMA 262] | `"^[a-z0-9]+$"`
+| `string` | `localized-string` | A string which is localized in the requested language | `"Fällige Wartungen"`
 |=====================================================================
 
 *Remark:* Please note that this list of standard data formats is not exhaustive 
