@@ -274,12 +274,12 @@ EventType:
         description: |
           Indicates a single ordering field. This is a JsonPointer, which is applied
           onto the whole event object, including the contained metadata and data (in
-          case of a data change event) objects. It must point to a field of type
+          case of a Lifecycle-Event) objects. It must point to a field of type
           string or number/integer (as for those the ordering is obvious).
 
           Indicates a single ordering field. It is a simple path (dot separated) to
           the JSON leaf element of the whole event object, including the contained metadata and data (in
-          case of a data change event) objects. It must point to a field of type
+          case of a Lifecycle-Event) objects. It must point to a field of type
           string or number/integer (as for those the ordering is obvious), and must be
           present in the schema.
         example: "data.order_change_counter"
@@ -301,7 +301,7 @@ EventType:
         description: |
           Indicates a single key field. It is a simple path (dot separated) to the JSON
           leaf element of the whole event object, including the contained metadata and
-          data (in case of a data change event) objects, and it must be present in the
+          data (in case of a Lifecycle-Event) objects, and it must be present in the
           schema.
        example: "data.order_number"
     created_at:
@@ -329,13 +329,13 @@ An _event category_ describes a generic class of event types. The
 guidelines define two such categories:
 
 * General Event: a general purpose category.
-* Data Change Event: a category to inform about data entity changes 
+* Lifecycle-Event: a category to inform about data entity changes 
   and used e.g. for data replication based data integration.
 
 A category describes a predefined structure (e.g. consisting of event 
 metadata as part of the event payload) that event publishers must
 conform to along with standard information specific for the event category
-(e.g. the operation for data change events).
+(e.g. the operation for Lifecycle-Events).
 
 
 === The general event category
@@ -381,20 +381,20 @@ Other than that, the JSON structures are identical.
 See <<201>> for more guidance on how to use the category.
 
 
-=== The data change event category
+=== The Lifecycle-Event category
 
-The _Data Change Event Category_ structure is shown below as an OpenAPI
+The _Lifecycle-Event Category_ structure is shown below as an OpenAPI
 Schema Object:
 
 [source,yaml]
 ----
-DataChangeEvent:
+LifecycleEvent:
   description: |
     Represents a change to an entity. The required fields are those
     expected to be sent by the producer, other fields may be added
     by intermediaries such as a publish/subscribe broker. An instance
     of an event based on the event type conforms to both the
-    DataChangeEvent's definition and the custom schema definition.
+    LifecycleEvent's definition and the custom schema definition.
   required:
     - metadata
     - data_op
@@ -426,12 +426,12 @@ DataChangeEvent:
         - S: A snapshot of an entity at a point in time.
 ----
 
-The Data Change Event Category is structurally different to the General
+The Lifecycle-Event Category is structurally different to the General
 Event Category defining a field called `data` as container for the custom
 payload, as well as specific information related to data
 changes in the `data_type`. 
 
-The following guidelines specifically apply to Data Change Events:
+The following guidelines specifically apply to Lifecycle-Events:
 
 * <<202>>
 * <<242>>
@@ -442,7 +442,7 @@ The following guidelines specifically apply to Data Change Events:
 [#event-metadata]
 === Event metadata
 
-The General and Data Change event categories share a common structure
+The General and Lifecycle-Event categories share a common structure
 for _metadata_. The metadata structure is shown below as an OpenAPI
 Schema Object:
 
@@ -629,9 +629,9 @@ requirements are low.
 
 
 [#202]
-== {MUST} use data change events to signal mutations
+== {MUST} use Lifecycle-Events to signal mutations
 
-You *must* use data change events to signal changes of stored entity instances
+You *must* use Lifecycle-Events to signal changes of stored entity instances
 and facilitate e.g. change data capture (CDC). Event sourced change data capture 
 is crucial for our data integration architecture as it supports the logical 
 replication (and reconstruction) of the application datastores 
@@ -646,10 +646,10 @@ to the data analytics and AI platform as transactional source datasets.
 
 
 [#242]
-== {MUST} provide explicit event ordering for data change events
+== {MUST} provide explicit event ordering for Lifecycle-Events
 
 While the order information is recommended for business events, it *must* be 
-provided for data change events. The ordering information defines the (create, 
+provided for Lifecycle-Events. The ordering information defines the (create, 
 update, delete) change order of the data entity instances managed via the 
 application's transactional datastore. It is needed for change data capture 
 to keep transactional dataset replicas in sync as source for data analytics. 
@@ -663,7 +663,7 @@ ordering information may not be provided.
 
 
 [#204]
-== {SHOULD} use the hash partition strategy for data change events
+== {SHOULD} use the hash partition strategy for Lifecycle-Events
 
 The `hash` partition strategy allows a producer to define which fields
 in an event are used as input to compute a logical partition the event
@@ -685,7 +685,7 @@ identifier such as the `eid` field or a timestamp. This ensures data
 changes arrive at the same partition for a given entity and can be
 consumed effectively by clients.
 
-There may be exceptional cases where data change events could have their
+There may be exceptional cases where Lifecycle-Events could have their
 partition strategy set to be the producer defined or random options, but
 generally `hash` is the right option - that is while the guidelines here
 are a "should", they can be read as "must, unless you have a very good
@@ -693,9 +693,9 @@ reason".
 
 
 [#205]
-== {SHOULD} ensure that data change events match the APIs resources
+== {SHOULD} ensure that Lifecycle-Events match the APIs resources
 
-A data change event's representation of an entity should correspond to
+A Lifecycle-Event's representation of an entity should correspond to
 the REST API representation.
 
 There's value in having the fewest number of published structures for a
@@ -706,7 +706,7 @@ interesting in the domain and abstract away from implementation or local
 details - there's no need to reflect every change that happens within
 your system.
 
-There are cases where it could make sense to define data change events
+There are cases where it could make sense to define Lifecycle-Events
 that don't directly correspond to your API resource representations.
 Some examples are -
 
@@ -875,7 +875,7 @@ idempotent out-of-order processing: Either your events must contain
 enough information to infer their original order during consumption or
 your domain must be designed in a way that order becomes irrelevant.
 
-As common example similar to data change events, idempotent out-of-order
+As common example similar to Lifecycle-Events, idempotent out-of-order
 processing can be supported by sending the following information:
 
 * the process/resource/entity identifier,
@@ -916,7 +916,7 @@ and *only* allowed for <<223, internal>> event type names:
 ----
 
 **Note:** consistent naming should be used whenever the same entity is exposed
-by a data change event and a RESTful API.
+by a Lifecycle-Event and a RESTful API.
 
 
 [#214]
